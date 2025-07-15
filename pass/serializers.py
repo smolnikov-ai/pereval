@@ -38,3 +38,27 @@ class PerevalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pereval
         fields = '__all__'
+
+
+    def create(self, validated_data):
+        user_data = validated_data.pop('user')
+        user_instance = User.objects.create(**user_data)
+        coords_data = validated_data.pop('coords')
+        coords_instance = Coords.objects.create(**coords_data)
+        level_data = validated_data.pop('level')
+        level_instance = Level.objects.create(**level_data)
+        images_data = validated_data.pop('images')
+
+        pereval_instance = Pereval.objects.create(
+            user=user_instance, coords=coords_instance,
+            level=level_instance, **validated_data, )
+
+
+        for i in images_data:
+            data = i.pop('data')
+            title = i.pop('title')
+            Image.objects.create(pereval=pereval_instance, data=data, title=title)
+
+        return pereval_instance
+
+
