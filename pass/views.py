@@ -7,12 +7,21 @@ from .serializers import PerevalSerializer, PerevalInfoSerializer, PerevalUpdate
 
 
 class SubmitData(APIView):
+    """
+    Representation for operations with information about passes.
+    The class provides methods for obtaining, creating, and partially updating information about passes.
+
+    Methods:
+        get(request, pk): returns detailed information about a pass by its pk
+        post(request): creates a new pass object based on the received data
+        patch(request, pk): partially updates an existing pass if its status is 'new'
+    """
 
     def get(self, request, pk):
         object = Pereval.objects.get(pk=pk)
         return Response(PerevalInfoSerializer(object).data)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         serializer = PerevalSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
