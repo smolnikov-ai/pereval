@@ -1,4 +1,4 @@
-from tkinter import Image
+from email.mime import image
 
 from rest_framework import serializers
 
@@ -25,20 +25,21 @@ class LevelSerializer(serializers.ModelSerializer):
 
 class ImagesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Image
-        fields = '__all__'
+        model = Images
+        fields = ['data', 'title', ]
 
 
 class PerevalSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    coords = CoordsSerializer(read_only=True)
-    level = LevelSerializer(read_only=True)
-    images = ImagesSerializer(read_only=True, many=True)
+    user = UserSerializer()
+    coords = CoordsSerializer()
+    level = LevelSerializer()
+    images = ImagesSerializer(many=True)
 
     class Meta:
         model = Pereval
-        fields = '__all__'
-
+        fields = ['beauty_title', 'title', 'other_titles',
+                  'connect', 'add_time', 'user', 'coords',
+                  'level', 'status', 'images', ]
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
@@ -53,12 +54,90 @@ class PerevalSerializer(serializers.ModelSerializer):
             user=user_instance, coords=coords_instance,
             level=level_instance, **validated_data, )
 
-
-        for i in images_data:
-            data = i.pop('data')
-            title = i.pop('title')
-            Image.objects.create(pereval=pereval_instance, data=data, title=title)
+        for image in images_data:
+            data = image.pop('data')
+            title = image.pop('title')
+            Images.objects.create(pereval=pereval_instance, data=data, title=title)
 
         return pereval_instance
 
+
+class PerevalInfoSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    coords = CoordsSerializer()
+    level = LevelSerializer()
+    images = ImagesSerializer(many=True)
+
+    class Meta:
+        model = Pereval
+        fields = ['beauty_title', 'title', 'other_titles',
+                  'connect', 'add_time', 'user', 'coords',
+                  'level', 'status', 'images', ]
+
+
+class CoordsUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coords
+        fields = '__all__'
+
+    def update(self, instance, validated_data):
+        instance.latitude = validated_data.get('latitude', instance.latitude)
+        instance.longitude = validated_data.get('longitude', instance.longitude)
+        instance.altitude = validated_data.get('altitude', instance.altitude)
+
+
+class LevelUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Level
+        fields = '__all__'
+
+    def update(self, instance, validated_data):
+        instance.winter = validated_data.get('winter', instance.winter)
+        instance.summer = validated_data.get('summer', instance.summer)
+        instance.autumn = validated_data.get('autumn', instance.autumn)
+        instance.spring = validated_data.get('spring', instance.spring)
+
+
+class ImagesUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Images
+        fields = ['data', 'title', ]
+
+    def update(self, instance, validated_data):
+        instance.data = validated_data.get('images', instance.data)
+        instance.title = validated_data.get('title', instance.title)
+
+
+class PerevalUpdateSerializer(serializers.ModelSerializer):
+    coords = CoordsUpdateSerializer()
+    level = LevelUpdateSerializer()
+    images = ImagesUpdateSerializer(many=True)
+
+    def update(self, instance, validated_data):
+        instance.beauty_title = validated_data.get('beauty_title', instance.beauty_title)
+        instance.title = validated_data.get('title', instance.title)
+        instance.other_titles = validated_data.get('other_titles', instance.other_titles)
+        instance.connect = validated_data.get('connect', instance.connect)
+
+        coords_data = validated_data.pop('coords', None)
+        if coords_data is not None:
+            LevelUpdateSerializer().update(instance.coords, coords_data)
+
+        level_data = validated_data.pop('level', None)
+        if level_data is not None:
+            LevelUpdateSerializer().update(instance.level, level_data)
+
+        images_data = validated_data.pop('images', [])
+        existing_images = {image.pk: image for image in instance.images.all()}
+
+        for image_data in images_data:
+            try:
+                pk = int(image_data['pk'])
+                existing_image = existing_images[pk]
+                ImagesUpdateSerializer().update(existing_image, image_data)
+            except KeyError:
+                Images.objects.create(pereval=instance, **image_data)
+
+        instance.save()
+        return instance
 
