@@ -86,6 +86,7 @@ class PerevalSerializer(serializers.ModelSerializer):
         fields = ['beauty_title', 'title', 'other_titles',
                   'connect', 'add_time', 'user', 'coords',
                   'level', 'status', 'images', ]
+        read_only_fields = ['status']
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
