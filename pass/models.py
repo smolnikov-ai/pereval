@@ -123,9 +123,9 @@ class Images(models.Model):
     The class models Images entity objects in the application
 
     Attributes:
-        data (URLField):
-        title (CharField):
-        pereval (ForeignKey):
+        data (URLField): image link
+        title (CharField): title of the image
+        pereval (ForeignKey): the pass that the image belongs to
     """
     data = models.URLField()
     title = models.CharField(max_length=50)

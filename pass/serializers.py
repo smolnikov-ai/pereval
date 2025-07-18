@@ -6,30 +6,76 @@ from .models import *
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    A serializer for converting data between a model object and JSON format
+
+    Metadata:
+        model: the model corresponding to this serializer
+        fields: list of model fields included in serialization
+    """
     class Meta:
         model = User
         fields = '__all__'
 
 
 class CoordsSerializer(serializers.ModelSerializer):
+    """
+    A serializer for converting data between a model object and JSON format
+
+    Metadata:
+        model: the model corresponding to this serializer
+        fields: list of model fields included in serialization
+    """
     class Meta:
         model = Coords
         fields = '__all__'
 
 
 class LevelSerializer(serializers.ModelSerializer):
+    """
+    A serializer for converting data between a model object and JSON format
+
+    Metadata:
+        model: the model corresponding to this serializer
+        fields: list of model fields included in serialization
+    """
     class Meta:
         model = Level
         fields = '__all__'
 
 
 class ImagesSerializer(serializers.ModelSerializer):
+    """
+    A serializer for converting data between a model object and JSON format
+
+    Metadata:
+        model: the model corresponding to this serializer
+        fields: list of model fields included in serialization
+    """
     class Meta:
         model = Images
         fields = ['data', 'title', ]
 
 
 class PerevalSerializer(serializers.ModelSerializer):
+    """
+    A serializer for converting data between a model object and JSON format
+
+    Attributes:
+        user(UserSerializer): serializer for the "User" field
+        coords(CoordsSerializer): serializer for the "Coords" field
+        level(LevelSerializer): serializer for the "Level" field
+        images(ImagesSerializer): serializer for the "Images" field
+
+    Metadata:
+        model: the model corresponding to this serializer
+        fields: list of model fields included in serialization
+
+    Methods:
+        create: Creating a new Pereval object with the creation of dependent models.
+                The method creates a new record in the Pereval table and associates
+                it with the User, Coords, Level objects and many photos (Images).
+    """
     user = UserSerializer()
     coords = CoordsSerializer()
     level = LevelSerializer()
@@ -63,6 +109,19 @@ class PerevalSerializer(serializers.ModelSerializer):
 
 
 class PerevalInfoSerializer(serializers.ModelSerializer):
+    """
+    A serializer for converting data between a model object and JSON format
+
+    Attributes:
+        user(UserSerializer): serializer for the "User" field
+        coords(CoordsSerializer): serializer for the "Coords" field
+        level(LevelSerializer): serializer for the "Level" field
+        images(ImagesSerializer): serializer for the "Images" field
+
+    Metadata:
+        model: the model corresponding to this serializer
+        fields: list of model fields included in serialization
+    """
     user = UserSerializer()
     coords = CoordsSerializer()
     level = LevelSerializer()
@@ -76,6 +135,16 @@ class PerevalInfoSerializer(serializers.ModelSerializer):
 
 
 class CoordsUpdateSerializer(serializers.ModelSerializer):
+    """
+    A serializer for updating data between a model object and JSON format
+
+    Metadata:
+        model: the model corresponding to this serializer
+        fields: list of model fields included in serialization
+
+    Methods:
+        update: updating data between a model object and JSON format
+    """
     class Meta:
         model = Coords
         fields = '__all__'
@@ -87,6 +156,16 @@ class CoordsUpdateSerializer(serializers.ModelSerializer):
 
 
 class LevelUpdateSerializer(serializers.ModelSerializer):
+    """
+    A serializer for updating data between a model object and JSON format
+
+    Metadata:
+        model: the model corresponding to this serializer
+        fields: list of model fields included in serialization
+
+    Methods:
+        update: updating data between a model object and JSON format
+    """
     class Meta:
         model = Level
         fields = '__all__'
@@ -99,6 +178,16 @@ class LevelUpdateSerializer(serializers.ModelSerializer):
 
 
 class ImagesUpdateSerializer(serializers.ModelSerializer):
+    """
+    A serializer for updating data between a model object and JSON format
+
+    Metadata:
+        model: the model corresponding to this serializer
+        fields: list of model fields included in serialization
+
+    Methods:
+        update: updating data between a model object and JSON format
+    """
     class Meta:
         model = Images
         fields = ['data', 'title', ]
@@ -109,6 +198,17 @@ class ImagesUpdateSerializer(serializers.ModelSerializer):
 
 
 class PerevalUpdateSerializer(serializers.ModelSerializer):
+    """
+    A serializer for updating data between a model object and JSON format
+
+    Attributes:
+        coords(CoordsSerializer): serializer for the "Coords" field
+        level(LevelSerializer): serializer for the "Level" field
+        images(ImagesSerializer): serializer for the "Images" field
+
+    Methods:
+        update: updating data between a model object and JSON format
+    """
     coords = CoordsUpdateSerializer()
     level = LevelUpdateSerializer()
     images = ImagesUpdateSerializer(many=True)
