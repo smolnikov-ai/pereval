@@ -17,16 +17,16 @@ class SubmitData(APIView):
         patch(request, pk): partially updates an existing pass if its status is 'new'
     """
 
-    def get(self, request, pk):
-        object = Pereval.objects.get(pk=pk)
-        return Response(PerevalInfoSerializer(object).data)
-
     def post(self, request):
         serializer = PerevalSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({'status': 'success', 'data': serializer.data}, status=status.HTTP_201_CREATED)
         return Response({'status': 'error', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    # def get(self, request, pk):
+    #         object = Pereval.objects.get(pk=pk)
+    #         return Response(PerevalInfoSerializer(object).data)
 
     def patch(self, request, pk):
         object = Pereval.objects.get(pk=pk)
